@@ -1,0 +1,11 @@
+node_modules
+npm-debug.log
+.idea
+.next
+.DS_Store
+dist/
+.vscode/
+coverage/
+config/
+scripts/
+jsconfig.json
