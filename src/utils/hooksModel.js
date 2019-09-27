@@ -48,7 +48,7 @@ export const setModel = (name, model) => {
       modelName = name;
     }
 
-    const _models$modelName = models[modelName];
+    const _models$modelName = models[modelName] || {};
     const state = _models$modelName.state;
     const actions = _models$modelName.actions;
     return assign({}, state, {}, actions);
@@ -61,7 +61,12 @@ export const setModel = (name, model) => {
       }
     }
 
-    const _models$name = models[name];
+    let _models$name = models[name];
+    if (!_models$name) {
+      // eslint-disable-next-line no-console
+      console.error(`未找到已注册为${name}的model`);
+      _models$name = {};
+    }
     const state = _models$name.state;
     const setters = _models$name.setters;
 
@@ -106,7 +111,7 @@ export const setModel = (name, model) => {
   models[name] = {
     state: initialState,
     actions,
-    setters: [],
+    setters: new Set(),
   };
   return models;
 };
@@ -130,16 +135,21 @@ export const useModel = function useModel(name) {
   const _useState = useState();
   const setState = _useState[1];
 
-  const _models$name2 = models[name];
+  let _models$name2 = models[name];
+  if (!_models$name2) {
+    // eslint-disable-next-line no-console
+    console.error(`未找到已注册为${name}的model`);
+    _models$name2 = {};
+  }
   const state = _models$name2.state;
   const actions = _models$name2.actions;
   const setters = _models$name2.setters;
   useEffect(
     function() {
-      const index = setters.length;
-      setters.push(setState);
+      setters.add(setState);
+
       return function() {
-        setters.splice(index, 1);
+        setters.delete(setState);
       };
     },
     [setters],
