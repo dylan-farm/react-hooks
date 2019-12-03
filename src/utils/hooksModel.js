@@ -1,12 +1,14 @@
 /** @format */
 
 import { useState, useEffect } from 'react';
-import { isObject, isString, isFunction, hasIn, assign } from 'lodash-es';
-import { throwError } from './error';
+import { isObject, isString, isFunction, hasIn, assign, cloneDeep } from 'lodash-es';
 /**
  * Utils
  */
 
+const throwError = errMsg => {
+  if (errMsg) throw new Error(errMsg);
+};
 const modelError = (type, key) =>
   type &&
   throwError(
@@ -49,7 +51,7 @@ export const setModel = (name, model) => {
     }
 
     const _models$modelName = models[modelName] || {};
-    const state = _models$modelName.state;
+    const state = cloneDeep(_models$modelName.state);
     const actions = _models$modelName.actions;
     return assign({}, state, {}, actions);
   };
@@ -70,7 +72,7 @@ export const setModel = (name, model) => {
     const state = _models$name.state;
     const setters = _models$name.setters;
 
-    const newState = assign({}, state, {}, payload);
+    const newState = cloneDeep(assign({}, state, {}, payload));
 
     models[name].state = newState;
     setters.forEach(function(setter) {
@@ -141,13 +143,12 @@ export const useModel = function useModel(name) {
     console.error(`未找到已注册为${name}的model`);
     _models$name2 = {};
   }
-  const state = _models$name2.state;
+  const state = cloneDeep(_models$name2.state);
   const actions = _models$name2.actions;
   const setters = _models$name2.setters;
   useEffect(
     function() {
       setters.add(setState);
-
       return function() {
         setters.delete(setState);
       };
