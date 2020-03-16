@@ -10,7 +10,6 @@ import compose from './compose';
  * Utils
  */
 const throwError = errMsg => {
-  // eslint-disable-next-line no-console
   if (errMsg) console.error(errMsg);
 };
 
@@ -36,7 +35,6 @@ const middlewareCallback = compose(middlewares);
 
 export const useMiddleware = fn => {
   if (typeof fn !== 'function') return throwError('middleware must be a function!');
-  // console.log('use %s', fn._name || fn.name || '-');
   middlewares.push(fn);
   return middlewares;
 };
@@ -128,27 +126,11 @@ export const createModel = model => {
     return modelName;
   };
   const _dispatch = getDispatch(getDisptchModelName);
-  // 兼容代码
-  const isFunctionActions = isFunction(initialActions);
-  let rawActions = initialActions;
-  if (isFunctionActions) {
-    rawActions = initialActions({
-      model: (modelName = namespace) => {
-        if (!isString(modelName)) return modelError({ type: 'notString', key: `getModel-namespace`, value: namespace });
-        if (!hasIn(models, modelName)) return modelError({ type: 'notExist', key: `getModel-model`, value: namespace });
-        const { state, actions } = models[modelName];
-        return { ...state, ...actions };
-      },
-      setState,
-    });
-  }
   // 设置model 对应 actions
-  const actions = Object.entries(rawActions).reduce((_actions, [actionName, rawAction]) => {
+  const actions = Object.entries(initialActions).reduce((_actions, [actionName, rawAction]) => {
     _actions[actionName] = (...rest) => {
       const _state = (models[namespace] || {}).state;
       const context = { state: _state, set: setState, select: _select, put: _dispatch };
-      // 兼容代码
-      // const action = () => (isFunctionActions ? rawAction(...rest) : rawAction(context, ...rest));
       const action = () => rawAction(context, ...rest);
       const res = middlewareCallback(context, action);
       return res;
@@ -185,25 +167,6 @@ const getUseStore = namespace => {
   };
 };
 
-// components 获取model-actions
-// const getAction = namespace => {
-//   if (!isString(namespace)) return modelError({ type: 'notString', key: `getAction-namespace`, value: namespace });
-//   if (!hasIn(models, namespace)) return modelError({ type: 'notExist', key: `getAction-model`, value: namespace });
-//   const { actions } = models[namespace] || {};
-//   return actions;
-// };
-
-// // v1.0 setModel 旧版api
-// export const setModel = (namespace, model) => createModel({ ...model, namespace });
-
-// // v1.0 useModel 旧版api
-// export const _useModel = namespace => {
-//   const state = getUseStore(namespace)();
-//   const actions = getAction(namespace);
-//   return { ...state, ...actions };
-// };
-
-// 新版v2.0 useModel
 export const useModel = namespace => {
   const useStore = getUseStore(namespace);
   const _dispatch = getDispatch(() => namespace);
