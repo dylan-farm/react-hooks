@@ -335,6 +335,13 @@ module.exports = function(webpackEnv) {
               },
               loader: require.resolve('eslint-loader'),
             },
+            {
+              loader: require.resolve('./loaders/jsxPx2RemLoader'),
+              options: {
+                remUnit: 100,
+                remFixed: 3,
+              },
+            },
           ],
           include: paths.appSrc,
         },
@@ -357,30 +364,6 @@ module.exports = function(webpackEnv) {
                     name: 'static/media/[name].[hash:8].[ext]',
                   },
                 },
-                // isEnvProduction &&{
-                //   loader: 'img-loader',
-                //   options: {
-                //       plugins: [
-                //           require('imagemin-gifsicle')({
-                //               interlaced: false
-                //           }),
-                //           require('imagemin-mozjpeg')({
-                //               progressive: true,
-                //               arithmetic: false
-                //           }),
-                //           require('imagemin-pngquant')({
-                //               floyd: 0.5,
-                //               speed: 2
-                //           }),
-                //           require('imagemin-svgo')({
-                //               plugins: [
-                //                   { removeTitle: true },
-                //                   { convertPathData: false }
-                //               ]
-                //           })
-                //       ]
-                //   }
-                // }
               ].filter(Boolean),
             },
             // Process application JS with Babel.
