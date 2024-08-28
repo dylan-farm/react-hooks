@@ -106,7 +106,7 @@
     "ts-pnp": "1.1.2",
     "uglifyjs-webpack-plugin": "1.2.5",
     "url-loader": "2.1.0",
-    "webpack": "4.39.1",
+    "webpack": "5.94.0",
     "webpack-bundle-analyzer": "^3.4.1",
     "webpack-chunk-hash": "^0.6.0",
     "webpack-dev-server": "3.2.1",
